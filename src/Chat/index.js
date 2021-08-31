@@ -1,71 +1,60 @@
-import React, {useEffect, useState} from 'react';
-import MessageInput from './MessageInput'
-import MessageList from './MessageList';
-import {makeStyles} from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import Dialog from './Dialogs';
+import React, { useEffect} from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addMessage } from "./chatSlice";
+import MessageList from "./MessageList";
+import MessageInput from "./MessageInput";
+import { makeStyles } from "@material-ui/core/styles";
+import { useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
-  name: {
-    textAlign: 'center',
+  chatWrapper: {
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  flex : {
-    display: 'flex',
-    justifyContent: 'center',
-    marginTop: '10px'
+
+  componentWrapper: {
+    width: "600px",
+    height: "600px",
+    border: "1px solid black",
+    display: "flex",
+    flexDirection: "column",
   },
-  dialogs: {
-    backgroundColor: 'yellow',
-    border: '1px solid black',
-    height: '604px',
-    padding: '10px',
-    boxSizing: 'border-box'
-  }
-}))
+}));
 
-function App() {
+function Chat() {
+  // const [messagesArray, setMessagesArray] = useState([]);
+  const urlParams = useParams();
+  const chatId = Number.parseInt(urlParams.id);
 
-  const classes = useStyles()
+  const { chats } = useSelector((state) => state.chat);
+  const messagesArray = chats.find((chat) => chat.id === chatId).messagesArray;
+  const dispatch = useDispatch();
 
-  const [ArrayMassage, setArrayMassage] = useState([]);
-  const [flag,setFlag] = useState(false)
+  const classes = useStyles();
 
-  function addMassageInChat (inputMassage){  
-    setArrayMassage((prev)=> [...prev,{'author': 'Ivan', 'text': inputMassage }])  
-    setFlag(true)    
-  }
+  const onSendMessage = (messageText) => {
+    dispatch(addMessage({ chatId, messageText }));
+  };
 
-  function robotAnswer (){
-    setFlag(false)  
-    let inputText = ArrayMassage[ArrayMassage.length - 1].text
-    setArrayMassage((prev)=> [...prev,{'author': 'robot', 'text': inputText}])  
-           
-  }
-  
   useEffect(() => {
-    if (flag){
-      setTimeout(() =>{
-        robotAnswer();
-      },1500)
-    } 
-    // eslint-disable-next-line
-  },[ArrayMassage]);
-
+    if (messagesArray.length > 0) {
+      setTimeout(() => {
+        // console.log("Message was sent");
+      }, 1000);
+    }
+  }, [messagesArray]);
 
   return (
-    <Container maxWidth="xl">
-      <div className={classes.flex}>
-        <div className={classes.dialogs}>
-          <Dialog />
-        </div>
-        <div>
-          <MessageList ArrayMassage={ArrayMassage}/>
-          <MessageInput addMassageInChat={addMassageInChat}/>
-        </div>       
+    <div className={classes.chatWrapper}>
+      <div className={classes.componentWrapper}>
+        <MessageList messagesArray={messagesArray} />
+        <MessageInput onSendMessage={onSendMessage} />
       </div>
-    </Container>
-      
+    </div>
   );
 }
 
-export default App;
+export default Chat;

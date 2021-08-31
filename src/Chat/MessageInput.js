@@ -1,73 +1,71 @@
-import React, { useState} from "react";
-import Warning from "./Warning";
-import {makeStyles} from "@material-ui/core/styles";
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import PropTypes from 'prop-types'
+import { useState } from "react";
+import PropTypes from "prop-types";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
-    textArea: {
-        width: '600px',
-        height: '100px',
-        backgroundColor: 'seagreen',
-        border: '1px solid black',
-        display: 'flex',
-        alignItems: 'center',
-    },
-      
-    input :{
-        width: '70%',
-        margin:'0 15px'
-    }
+  input: {
+    margin: "0px 10px",
+    width: "70%",
+  },
+
+  button: {
+  },
+
+  inputWrapper: {
+    flex: 1,
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
 }));
 
+const MessageInput = ({ onSendMessage }) => {
+  const classes = useStyles();
+  const [inputMessage, setInputMessage] = useState("");
 
-const MessageInput = ({addMassageInChat}) => {
+  const sendAndRemoveInput = () => {
+    const trimmedMessageText = inputMessage.trim();
+    if (trimmedMessageText !== "") {
+      onSendMessage(trimmedMessageText);
+      setInputMessage("");
+    }
+  };
 
-    const classes = useStyles()
-
-    const [inputMassage, setInputMassage] = useState('');
-
-    function SendAndRemoveInput (){
-        let value = inputMassage.trim()
-    
-        if(value !== ''){ 
-            setInputMassage('')
-            addMassageInChat(value) 
-               
-        }else{
-            setInputMassage('')
-        }  
-      }
-
-    return <div>
-                <div className={classes.textArea} >
-                        <TextField 
-                            className={classes.input} 
-                            value={inputMassage} 
-                            autoFocus
-                            onChange={(e) => setInputMassage(e.target.value)}
-                            onKeyPress={({key}) => {
-                            if( key === 'Enter'){
-                                SendAndRemoveInput()
-                            }
-                            }}
-                            />
-
-                        <Button 
-                            variant="contained" 
-                            color="primary" 
-                            className={classes.button} 
-                            onClick={SendAndRemoveInput}>
-                            Отправить
-                        </Button>
-                    </div>
-                    <Warning input={inputMassage}></Warning>
-            </div>
-}
+  return (
+    <div className={classes.inputWrapper}>
+      <TextField
+        value={inputMessage}
+        label="Введите сообщение"
+        onChange={(e) => setInputMessage(e.target.value)}
+        onKeyDown={({ key }) => {
+          if (key === "Enter") {
+            sendAndRemoveInput();
+          }
+        }}
+        // multiline
+        classes={{
+          root: classes.input,
+        }}
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={sendAndRemoveInput}
+        classes={{
+          root: classes.button,
+        }}
+      >
+        Отправить
+      </Button>
+    </div>
+  );
+};
 
 MessageInput.propTypes = {
-    addMassageInChat : PropTypes.func.isRequired
-} 
+  onSendMessage: PropTypes.func.isRequired,
+};
 
 export default MessageInput;
