@@ -1,11 +1,11 @@
 import { useState } from "react";
-// import { AppBar as MaterialUiAppBar } from "@material-ui/core";
-import { useSelector } from "react-redux";
+import { AppBar as MaterialUiAppBar } from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
 import InputAdornment from "@material-ui/core/InputAdornment";
-// import Toolbar from "@material-ui/core/Toolbar";
+import Toolbar from "@material-ui/core/Toolbar";
 import Box from "@material-ui/core/Box";
-// import Typography from "@material-ui/core/Typography";
-// import { Link, useLocation, useHistory } from "react-router-dom";
+import Typography from "@material-ui/core/Typography";
+import { Link, useLocation, useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -15,7 +15,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 import SearchIcon from "@material-ui/icons/Search";
 import ChatPreview from "./ChatPreview";
-import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   link: {
@@ -40,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
     width: "350px",
     height: "100%",
     padding: "10px 10px 0px 10px",
-    
   },
 
   topComponent: {
@@ -67,20 +65,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
+const routes = [
+  {
+    pathTitle: "Home",
+    path: "/home",
+  },
+  { pathTitle: "Chat", path: "/chat" },
+  { pathTitle: "Playground", path: "/playground" },
+  { pathTitle: "Cats", path: "/cats" },
+];
 
 const AppBar = () => {
   const classes = useStyles();
-
+  const history = useHistory();
   const { profiles, messages } = useSelector((state) => state.chat);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const history = useHistory()
-
   const handleClick = (event) => {
-    // console.log(event.currentTarget)
     setAnchorEl(event.currentTarget);
   };
 
@@ -103,17 +106,16 @@ const AppBar = () => {
           id="menu"
           anchorEl={anchorEl}
           open={open}
-          keepMounted
           onClose={handleClose}
           anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
           anchorPosition={{ top: 50, left: 25 }}
           anchorReference={"anchorPosition"}
         >
-          
-          
-          <MenuItem onClick={() => history.push('/')}>Профиль</MenuItem>
-          <MenuItem onClick={() => history.push('/playground')}>Настройки</MenuItem>
-          <MenuItem onClick={() => history.push('/pogoda')}>Погода</MenuItem>
+          <MenuItem key={1} onClick={() => history.push("/cats")}>
+            Коты
+          </MenuItem>
+          <MenuItem key={2}>Профиль</MenuItem>
+          <MenuItem key={3}>Настройки</MenuItem>
         </Menu>
 
         <TextField
@@ -132,7 +134,10 @@ const AppBar = () => {
 
       <Box className={classes.chatWrapper}>
         {profiles.map((profile) => (
-          <ChatPreview profile={profile} key={profile.id} messages={messages[profile.id]} />
+          <ChatPreview
+            profile={profile}
+            messages={messages[profile.id] || []}
+          />
         ))}
       </Box>
     </Drawer>

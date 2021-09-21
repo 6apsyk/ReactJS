@@ -55,12 +55,10 @@ const ChatPreview = ({ messages, profile }) => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
-  // console.log(location)
 
   const { avatar, name, id } = profile;
 
   const locationSplitted = location.pathname.split("/");
-  // console.log(locationSplitted)
 
   const isSelected =
     locationSplitted[1] === "chat" &&
